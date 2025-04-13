@@ -23,10 +23,10 @@ struct ProfileView: View {
 
     var body: some View {
         ZStack(alignment: .top) {
-            // Background image
+            // Background image (black & white)
             Image(backgroundImageName(for: profile.displayName))
                 .resizable()
-                .saturation(0.8)
+                .saturation(0)
                 .scaledToFill()
                 .ignoresSafeArea()
 
@@ -36,61 +36,63 @@ struct ProfileView: View {
                         .padding(.top, 16)
                 } else {
                     StrategyMapView(goals: filteredGoals)
-                        .padding(.top, 50) // add space below toolbar
+                        .padding(.top, 130)// space below top bar
                         .id(strategyMapID)
                         .transition(.opacity)
                 }
             }
             .padding(.horizontal)
-        }
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                VStack(spacing: 0) {
-                    VStack(spacing: 8) {
-                        // Avatar + title
-                        HStack(spacing: 8) {
-                            Image(profile.imageName)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 30, height: 30)
-                                .clipShape(Circle())
 
-                            Text("Challenges for \(profile.displayName)")
-                                .font(.headline)
-                                .foregroundColor(.black)
-                        }
+            // Custom Top Bar with white background and filters
+            VStack(spacing: 0) {
+                // Extend white background behind notch
+                Color.white
+                    .ignoresSafeArea(edges: .top)
+                    .frame(height: 0)
 
-                        // Filter bar
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 12) {
-                                ForEach([allTasksLabel] + taskFilters, id: \.self) { task in
-                                    Text(task)
-                                        .padding(.vertical, 6)
-                                        .padding(.horizontal, 12)
-                                        .background(selectedTask == task ? Color.blue.opacity(0.2) : Color.gray.opacity(0.1))
-                                        .cornerRadius(10)
-                                        .onTapGesture {
-                                            withAnimation {
-                                                selectedTask = task
-                                                strategyMapID = UUID()
-                                            }
-                                        }
-                                }
-                            }
-                            .padding(.horizontal)
-                            .padding(.bottom, 9)
-                            
-                        }
+                VStack(spacing: 8) {
+                    // Avatar and title
+                    HStack(spacing: 8) {
+                        Image(profile.imageName)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 30, height: 30)
+                            .clipShape(Circle())
+
+                        Text("Challenges for \(profile.displayName)")
+                            .font(.headline)
+                            .foregroundColor(.black)
                     }
                     .padding(.top, 8)
-                    .frame(maxWidth: .infinity)
-                    .background(Color.white)
-                    .overlay(Divider(), alignment: .bottom)
+
+                    // Task filters
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 12) {
+                            ForEach([allTasksLabel] + taskFilters, id: \.self) { task in
+                                Text(task)
+                                    .padding(.vertical, 6)
+                                    .padding(.horizontal, 12)
+                                    .background(selectedTask == task ? Color.blue.opacity(0.2) : Color.gray.opacity(0.1))
+                                    .cornerRadius(10)
+                                    .onTapGesture {
+                                        withAnimation {
+                                            selectedTask = task
+                                            strategyMapID = UUID()
+                                        }
+                                    }
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.bottom, 8)
+                    }
                 }
+                .padding(.top, 30)
+                .frame(maxWidth: .infinity)
+                .background(Color.white)
+                .overlay(Divider(), alignment: .bottom)
             }
         }
-            
+        .navigationBarTitleDisplayMode(.inline)
         .onAppear(perform: loadCSV)
     }
 

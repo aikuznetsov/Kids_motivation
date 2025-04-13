@@ -14,7 +14,7 @@ func drawArrow(from: CGPoint, to: CGPoint, in context: GraphicsContext) {
     path.move(to: fromPoint)
     path.addQuadCurve(to: toPoint, control: controlPoint)
 
-    context.stroke(path, with: .color(.red), lineWidth: 2)
+    context.stroke(path, with: .color(.red), lineWidth: 4)
 
     // Draw arrowhead
     let angle = atan2(toPoint.y - controlPoint.y, toPoint.x - controlPoint.x)
@@ -36,6 +36,6 @@ func drawArrow(from: CGPoint, to: CGPoint, in context: GraphicsContext) {
     arrowPath.move(to: toPoint)
     arrowPath.addLine(to: point2)
 
-    context.stroke(arrowPath, with: .color(.red), lineWidth: 2)
+    context.stroke(arrowPath, with: .color(.red), lineWidth: 4)
 }
 
