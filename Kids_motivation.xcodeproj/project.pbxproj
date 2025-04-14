@@ -106,6 +106,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				B7B404FE2DAC5C29000E8760 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				B78A51152DAB1F9900F99FC8 /* Kids_motivation */,
@@ -195,6 +196,9 @@
 			);
 			mainGroup = B78A510A2DAB1F9900F99FC8;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				B7B404FC2DAC5C0F000E8760 /* XCRemoteSwiftPackageReference "SwiftCSV" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B78A51142DAB1F9900F99FC8 /* Products */;
 			projectDirPath = "";
@@ -265,6 +269,10 @@
 			isa = PBXTargetDependency;
 			target = B78A51122DAB1F9900F99FC8 /* Kids_motivation */;
 			targetProxy = B78A512E2DAB1F9B00F99FC8 /* PBXContainerItemProxy */;
+		};
+		B7B404FE2DAC5C29000E8760 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = B7B404FD2DAC5C29000E8760 /* SwiftCSV */;
 		};
 /* End PBXTargetDependency section */
 
@@ -402,7 +410,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -431,7 +439,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -558,6 +566,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B7B404FC2DAC5C0F000E8760 /* XCRemoteSwiftPackageReference "SwiftCSV" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/swiftcsv/SwiftCSV";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.10.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B7B404FD2DAC5C29000E8760 /* SwiftCSV */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B7B404FC2DAC5C0F000E8760 /* XCRemoteSwiftPackageReference "SwiftCSV" */;
+			productName = SwiftCSV;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B78A510B2DAB1F9900F99FC8 /* Project object */;
 }

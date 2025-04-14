@@ -1,11 +1,5 @@
-//
-//  GoalParser.swift
-//  Kids_motivation
-//
-//  Created by Anatoly Kuznetsov on 4/12/25.
-//
-
 import Foundation
+import TabularData
 
 enum GoalStatus: String, Codable {
     case locked
@@ -23,44 +17,56 @@ struct Goal: Identifiable, Equatable, Hashable {
     let dependency: [Int]
     let description: String
     var status: GoalStatus
-    var lockedBy: [String]? = nil  // ✅ New field
+    var lockedBy: [String]? = nil
 }
 
-func parseCSV(csv: String) -> [Goal] {
-    let lines = csv.components(separatedBy: "\n").filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
-    let dataLines = lines.dropFirst()
-
+func parseCSV(csv dataFrame: DataFrame) -> [Goal] {
     var rawGoals: [Goal] = []
 
-    for line in dataLines {
-        let columns = line.components(separatedBy: ",")
-        if columns.count >= 8 {
-            let id = Int(columns[0].trimmingCharacters(in: .whitespaces)) ?? 0
-            let name = columns[1]
-            let task = columns[2]
-            let category = columns[3]
-            let level = Int(columns[4]) ?? 1
-            let prize = columns[5]
-            let dependenciesString = columns[6].trimmingCharacters(in: .whitespacesAndNewlines)
-            let dependencyIDs = dependenciesString
+    for (index, row) in dataFrame.rows.enumerated() {
+        print("📄 Row \(index): \(row)")
+
+        guard
+            let id = row["id"] as? Int,
+            let name = row["name"] as? String,
+            let task = row["task"] as? String,
+            let category = row["category"] as? String,
+            let level = row["level"] as? Int,
+            let prize = row["prize"] as? String,
+            let description = row["description"] as? String
+        else {
+            print("⚠️ Skipping row \(index) due to missing required fields")
+            continue
+        }
+
+        // Handle flexible `dependency` input: can be Int or String
+        var dependencyIDs: [Int] = []
+        if let depString = row["dependency"] as? String {
+            dependencyIDs = depString
                 .split(separator: ",")
                 .compactMap { Int($0.trimmingCharacters(in: .whitespaces)) }
-            let description = columns[7]
-            let rawStatus = columns.count > 8 ? columns[8].trimmingCharacters(in: .whitespacesAndNewlines) : ""
-            let initialStatus: GoalStatus = (rawStatus.lowercased() == "done") ? .completed : .locked
-
-            rawGoals.append(Goal(
-                id: id,
-                name: name,
-                task: task,
-                category: category,
-                level: level,
-                prize: prize,
-                dependency: dependencyIDs,
-                description: description,
-                status: initialStatus
-            ))
+        } else if let singleDep = row["dependency"] as? Int {
+            dependencyIDs = [singleDep]
         }
+
+        // Handle optional status field
+        let rawStatus = (row["status"] as? String ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let initialStatus: GoalStatus = (rawStatus.lowercased() == "done") ? .completed : .locked
+
+        let goal = Goal(
+            id: id,
+            name: name,
+            task: task,
+            category: category,
+            level: level,
+            prize: prize,
+            dependency: dependencyIDs,
+            description: description,
+            status: initialStatus
+        )
+
+        print("✅ Parsed goal: \(goal)")
+        rawGoals.append(goal)
     }
 
     let goalMap = Dictionary(uniqueKeysWithValues: rawGoals.map { ($0.id, $0) })
@@ -76,8 +82,11 @@ func parseCSV(csv: String) -> [Goal] {
                 goal.lockedBy = unmetDependencies.compactMap { goalMap[$0]?.name }
             }
         }
+        print("🔁 Final goal with status: \(goal.name) - \(goal.status.rawValue)")
         finalGoals.append(goal)
     }
 
     return finalGoals
 }
+
+

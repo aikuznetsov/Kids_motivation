@@ -6,33 +6,7 @@
 
 import SwiftUI
 
-enum Profile: Hashable {
-    case profileA
-    case profileB
 
-    var sheetURL: URL {
-        switch self {
-        case .profileA:
-            return URL(string: "https://docs.google.com/spreadsheets/d/1GrSbBUicZOiOBbG6iJ7fmFq8ckYHXMUgcY2jpiG9I14/export?format=csv")!
-        case .profileB:
-            return URL(string: "https://docs.google.com/spreadsheets/d/<SHEET_ID_2>/export?format=csv")!
-        }
-    }
-
-    var displayName: String {
-        switch self {
-        case .profileA: return "Maksim"
-        case .profileB: return "Rita"
-        }
-    }
-
-    var imageName: String {
-        switch self {
-        case .profileA: return "boy"
-        case .profileB: return "girl"
-        }
-    }
-}
 
 struct ContentView: View {
     var body: some View {

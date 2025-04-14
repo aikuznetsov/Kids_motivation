@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import TabularData
 
 struct ProfileView: View {
     let profile: Profile
@@ -14,13 +15,13 @@ struct ProfileView: View {
     @State private var selectedTask: String = "All tasks"
     @State private var taskFilters: [String] = []
     @State private var strategyMapID = UUID()
-
+    
     private let allTasksLabel = "All tasks"
-
+    
     var filteredGoals: [Goal] {
         selectedTask == allTasksLabel ? goals : goals.filter { $0.task == selectedTask }
     }
-
+    
     var body: some View {
         ZStack(alignment: .top) {
             // Background image (black & white)
@@ -29,7 +30,7 @@ struct ProfileView: View {
                 .saturation(0)
                 .scaledToFill()
                 .ignoresSafeArea()
-
+            
             VStack {
                 if isLoading {
                     ProgressView("Loading goals...")
@@ -42,14 +43,14 @@ struct ProfileView: View {
                 }
             }
             .padding(.horizontal)
-
+            
             // Custom Top Bar with white background and filters
             VStack(spacing: 0) {
                 // Extend white background behind notch
                 Color.white
                     .ignoresSafeArea(edges: .top)
                     .frame(height: 0)
-
+                
                 VStack(spacing: 8) {
                     // Avatar and title
                     HStack(spacing: 8) {
@@ -58,13 +59,13 @@ struct ProfileView: View {
                             .scaledToFill()
                             .frame(width: 30, height: 30)
                             .clipShape(Circle())
-
+                        
                         Text("Challenges for \(profile.displayName)")
                             .font(.headline)
                             .foregroundColor(.black)
                     }
                     .padding(.top, 8)
-
+                    
                     // Task filters
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 12) {
@@ -95,28 +96,30 @@ struct ProfileView: View {
         .navigationBarTitleDisplayMode(.inline)
         .onAppear(perform: loadCSV)
     }
-
+    
     private func loadCSV() {
-        URLSession.shared.dataTask(with: profile.sheetURL) { data, _, _ in
-            guard let data = data,
-                  let csv = String(data: data, encoding: .utf8) else { return }
-
-            let parsed = parseCSV(csv: csv)
-
-            DispatchQueue.main.async {
-                self.goals = parsed
-                self.isLoading = false
-                let allTasks = Set(parsed.map { $0.task }.filter { !$0.isEmpty })
-                self.taskFilters = Array(allTasks).sorted()
+        Task {
+            do {
+                let options = CSVReadingOptions(
+                    hasHeaderRow: true,
+                    nilEncodings: ["", "nil"],
+                    ignoresEmptyLines: true
+                )
+                
+                let dataFrame = try DataFrame(contentsOfCSVFile: profile.sheetURL, options: options)
+                
+                let parsedGoals = parseCSV(csv: dataFrame)
+                
+                DispatchQueue.main.async {
+                    self.goals = parsedGoals
+                    self.isLoading = false
+                    let allTasks = Set(parsedGoals.map { $0.task }.filter { !$0.isEmpty })
+                    self.taskFilters = Array(allTasks).sorted()
+                }
+                
+            } catch {
+                print("CSV loading or parsing failed: \(error)")
             }
-        }.resume()
-    }
-
-    private func backgroundImageName(for name: String) -> String {
-        switch name {
-        case "Maksim": return "pockemon_background"
-        case "Rita": return "background_girl"
-        default: return "background_default"
         }
     }
 }
