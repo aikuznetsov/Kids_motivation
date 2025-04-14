@@ -68,6 +68,8 @@ struct GoalCard: View {
             return Image("book")
         case "Swim":
             return Image("swim")
+        case "Clean":
+            return Image("clean")
         default:
             return Image(systemName: "questionmark.circle")
         }
