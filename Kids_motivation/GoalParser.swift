@@ -24,7 +24,6 @@ func parseCSV(csv dataFrame: DataFrame) -> [Goal] {
     var rawGoals: [Goal] = []
 
     for (index, row) in dataFrame.rows.enumerated() {
-        print("📄 Row \(index): \(row)")
 
         guard
             let id = row["id"] as? Int,
@@ -35,7 +34,6 @@ func parseCSV(csv dataFrame: DataFrame) -> [Goal] {
             let prize = row["prize"] as? String,
             let description = row["description"] as? String
         else {
-            print("⚠️ Skipping row \(index) due to missing required fields")
             continue
         }
 
@@ -65,7 +63,6 @@ func parseCSV(csv dataFrame: DataFrame) -> [Goal] {
             status: initialStatus
         )
 
-        print("✅ Parsed goal: \(goal)")
         rawGoals.append(goal)
     }
 
@@ -82,7 +79,6 @@ func parseCSV(csv dataFrame: DataFrame) -> [Goal] {
                 goal.lockedBy = unmetDependencies.compactMap { goalMap[$0]?.name }
             }
         }
-        print("🔁 Final goal with status: \(goal.name) - \(goal.status.rawValue)")
         finalGoals.append(goal)
     }
 

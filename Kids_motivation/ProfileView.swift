@@ -15,6 +15,7 @@ struct ProfileView: View {
     @State private var selectedTask: String = "All tasks"
     @State private var taskFilters: [String] = []
     @State private var strategyMapID = UUID()
+    @State private var topBarHeight: CGFloat = 0
     
     private let allTasksLabel = "All tasks"
     
@@ -23,76 +24,41 @@ struct ProfileView: View {
     }
     
     var body: some View {
-        ZStack(alignment: .top) {
-            // Background image (black & white)
+        VStack(spacing: 0) {
+            TopBarView(
+                profile: profile,
+                allTasksLabel: allTasksLabel,
+                taskFilters: taskFilters,
+                selectedTask: selectedTask,
+                onTaskSelect: { task in
+                    withAnimation {
+                        selectedTask = task
+                        strategyMapID = UUID()
+                    }
+                },
+                onHeightChange: { height in
+                    topBarHeight = height
+                }
+            )
+            .padding(.top, -45)
+
+            if isLoading {
+                ProgressView("Loading goals...")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                StrategyMapView(goals: filteredGoals)
+                    .id(strategyMapID)
+                    .transition(.opacity)
+                    .padding(.top, 0) // we no longer need to compensate for top bar height
+            }
+        }
+        .background(
             Image(backgroundImageName(for: profile.displayName))
                 .resizable()
                 .saturation(0)
                 .scaledToFill()
                 .ignoresSafeArea()
-            
-            VStack {
-                if isLoading {
-                    ProgressView("Loading goals...")
-                        .padding(.top, 16)
-                } else {
-                    StrategyMapView(goals: filteredGoals)
-                        .padding(.top, 130)// space below top bar
-                        .id(strategyMapID)
-                        .transition(.opacity)
-                }
-            }
-            .padding(.horizontal)
-            
-            // Custom Top Bar with white background and filters
-            VStack(spacing: 0) {
-                // Extend white background behind notch
-                Color.white
-                    .ignoresSafeArea(edges: .top)
-                    .frame(height: 0)
-                
-                VStack(spacing: 8) {
-                    // Avatar and title
-                    HStack(spacing: 8) {
-                        Image(profile.imageName)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 30, height: 30)
-                            .clipShape(Circle())
-                        
-                        Text("Challenges for \(profile.displayName)")
-                            .font(.headline)
-                            .foregroundColor(.black)
-                    }
-                    .padding(.top, 8)
-                    
-                    // Task filters
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 12) {
-                            ForEach([allTasksLabel] + taskFilters, id: \.self) { task in
-                                Text(task)
-                                    .padding(.vertical, 6)
-                                    .padding(.horizontal, 12)
-                                    .background(selectedTask == task ? Color.blue.opacity(0.2) : Color.gray.opacity(0.1))
-                                    .cornerRadius(10)
-                                    .onTapGesture {
-                                        withAnimation {
-                                            selectedTask = task
-                                            strategyMapID = UUID()
-                                        }
-                                    }
-                            }
-                        }
-                        .padding(.horizontal)
-                        .padding(.bottom, 8)
-                    }
-                }
-                .padding(.top, 30)
-                .frame(maxWidth: .infinity)
-                .background(Color.white)
-                .overlay(Divider(), alignment: .bottom)
-            }
-        }
+        )
         .navigationBarTitleDisplayMode(.inline)
         .onAppear(perform: loadCSV)
     }

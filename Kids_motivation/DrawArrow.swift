@@ -1,4 +1,3 @@
-
 import SwiftUI
 
 func drawArrow(from: CGPoint, to: CGPoint, in context: GraphicsContext) {
@@ -10,15 +9,14 @@ func drawArrow(from: CGPoint, to: CGPoint, in context: GraphicsContext) {
         y: min(fromPoint.y, toPoint.y) - 10
     )
 
+    // Arrow path
     var path = Path()
     path.move(to: fromPoint)
     path.addQuadCurve(to: toPoint, control: controlPoint)
 
-    context.stroke(path, with: .color(.red), lineWidth: 4)
-
-    // Draw arrowhead
+    // Arrowhead path
     let angle = atan2(toPoint.y - controlPoint.y, toPoint.x - controlPoint.x)
-    let arrowLength: CGFloat = 10
+    let arrowLength: CGFloat = 16
     let arrowAngle: CGFloat = .pi / 6
 
     let point1 = CGPoint(
@@ -30,12 +28,33 @@ func drawArrow(from: CGPoint, to: CGPoint, in context: GraphicsContext) {
         y: toPoint.y - arrowLength * sin(angle + arrowAngle)
     )
 
-    var arrowPath = Path()
-    arrowPath.move(to: toPoint)
-    arrowPath.addLine(to: point1)
-    arrowPath.move(to: toPoint)
-    arrowPath.addLine(to: point2)
+    var arrowHead = Path()
+    arrowHead.move(to: toPoint)
+    arrowHead.addLine(to: point1)
+    arrowHead.move(to: toPoint)
+    arrowHead.addLine(to: point2)
 
-    context.stroke(arrowPath, with: .color(.red), lineWidth: 4)
+    // BLACK contour (background)
+    context.stroke(
+        path,
+        with: .color(.black),
+        style: StrokeStyle(lineWidth: 9, lineCap: .round, lineJoin: .round)
+    )
+    context.stroke(
+        arrowHead,
+        with: .color(.black),
+        style: StrokeStyle(lineWidth: 9, lineCap: .round, lineJoin: .round)
+    )
+
+    // RED foreground
+    context.stroke(
+        path,
+        with: .color(.red),
+        style: StrokeStyle(lineWidth: 6, lineCap: .round, lineJoin: .round)
+    )
+    context.stroke(
+        arrowHead,
+        with: .color(.red),
+        style: StrokeStyle(lineWidth: 6, lineCap: .round, lineJoin: .round)
+    )
 }
-

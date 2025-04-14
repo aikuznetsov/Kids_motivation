@@ -33,12 +33,11 @@ struct StrategyMapView: View {
                                                         y: geo.frame(in: .named("scroll")).midY
                                                     )
                                                     positions[goal.id] = center
-                                                    print("📌 Position set for goal \(goal.id): \(center)")
                                                     
                                                     if allPositionsReady {
                                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                                             canvasRefreshTrigger += 1
-                                                            print("🔁 Triggered canvas redraw")
+
                                                         }
                                                     }
                                                 }
@@ -52,17 +51,40 @@ struct StrategyMapView: View {
 
                 if allPositionsReady {
                     Canvas { context, size in
-                        for goal in goals {
+                        // Precompute all incoming dependencies per goal
+                        let goalToIncomingDeps: [Int: [Int]] = goals.reduce(into: [:]) { result, goal in
                             for depID in goal.dependency {
-                                if let from = positions[depID],
-                                   let to = positions[goal.id] {
-                                    print("🟥 Drawing arrow from \(depID) to \(goal.id)")
-                                    drawArrow(from: from, to: to, in: context)
-                                }
+                                result[goal.id, default: []].append(depID)
+                            }
+                        }
+
+                        for goal in goals {
+                            guard let toBase = positions[goal.id] else { continue }
+                            let incoming = goalToIncomingDeps[goal.id] ?? []
+
+                            // Sort dependencies by x position of their start points
+                            let sortedIncoming = incoming.sorted {
+                                guard let p1 = positions[$0], let p2 = positions[$1] else { return false }
+                                return p1.x < p2.x
+                            }
+
+                            for (index, depID) in sortedIncoming.enumerated() {
+                                guard let from = positions[depID] else { continue }
+
+                                // Offset only the end point to spread arrows
+                                let spacing: CGFloat = 20
+                                let spread = CGFloat(sortedIncoming.count - 1) / 2.0
+                                let offset = CGFloat(index) - spread
+                                let to = CGPoint(x: toBase.x + offset * spacing, y: toBase.y)
+
+                                print("🟥 Drawing arrow from \(depID) to \(goal.id)")
+                                print("   ↳ From: \(from), To: \(to), Offset: \(offset * spacing)")
+
+                                drawArrow(from: from, to: to, in: context)
                             }
                         }
                     }
-                    .id(canvasRefreshTrigger) // 🟢 Force redraw when ID changes
+                    .id(canvasRefreshTrigger)
                     .allowsHitTesting(false)
                 }
             }
