@@ -1,8 +1,8 @@
 import SwiftUI
 
 func drawArrow(from: CGPoint, to: CGPoint, in context: GraphicsContext) {
-    let fromPoint = CGPoint(x: from.x, y: from.y + 70)
-    let toPoint = CGPoint(x: to.x, y: to.y - 70)
+    let fromPoint = CGPoint(x: from.x, y: from.y + 80)
+    let toPoint = CGPoint(x: to.x, y: to.y - 80)
 
     let controlPoint = CGPoint(
         x: (fromPoint.x + toPoint.x) / 2,
@@ -49,12 +49,12 @@ func drawArrow(from: CGPoint, to: CGPoint, in context: GraphicsContext) {
     // RED foreground
     context.stroke(
         path,
-        with: .color(.red),
+        with: .color(.yellow),
         style: StrokeStyle(lineWidth: 6, lineCap: .round, lineJoin: .round)
     )
     context.stroke(
         arrowHead,
-        with: .color(.red),
+        with: .color(.yellow),
         style: StrokeStyle(lineWidth: 6, lineCap: .round, lineJoin: .round)
     )
 }

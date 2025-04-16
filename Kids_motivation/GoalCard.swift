@@ -18,7 +18,11 @@ struct GoalCard: View {
                 Text(goal.name)
                     .font(.caption)
                     .multilineTextAlignment(.center)
-                    .padding(6)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.7)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .frame(maxWidth: .infinity)
                     .background(backgroundColor(for: goal.status))
                     .cornerRadius(8)
 
@@ -27,7 +31,7 @@ struct GoalCard: View {
                     .foregroundColor(isLocked ? .secondary : .primary)
                     .bold()
             }
-            .frame(width: 130, height: 140)
+            .frame(width: 130, height: 160) // increased height
             .background(isLocked ? Color.gray.opacity(0.2) : Color.white)
             .padding(4)
             .background(Color.white)
@@ -45,7 +49,7 @@ struct GoalCard: View {
                     .background(Color.green)
                     .cornerRadius(8)
                     .rotationEffect(.degrees(-30))
-                    .offset(y: -30) //
+                    .offset(y: -30)
             }
         }
     }
@@ -70,6 +74,12 @@ struct GoalCard: View {
             return Image("swim")
         case "Clean":
             return Image("clean")
+        case "Russian Language":
+            return Image("russian_flag")
+        case "Computer":
+            return Image("computer")
+        case "Adventure":
+            return Image("adventure")
         default:
             return Image(systemName: "questionmark.circle")
         }

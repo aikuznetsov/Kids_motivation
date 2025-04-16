@@ -23,8 +23,7 @@ struct Goal: Identifiable, Equatable, Hashable {
 func parseCSV(csv dataFrame: DataFrame) -> [Goal] {
     var rawGoals: [Goal] = []
 
-    for (index, row) in dataFrame.rows.enumerated() {
-
+    for row in dataFrame.rows {
         guard
             let id = row["id"] as? Int,
             let name = row["name"] as? String,
@@ -37,7 +36,6 @@ func parseCSV(csv dataFrame: DataFrame) -> [Goal] {
             continue
         }
 
-        // Handle flexible `dependency` input: can be Int or String
         var dependencyIDs: [Int] = []
         if let depString = row["dependency"] as? String {
             dependencyIDs = depString
@@ -47,7 +45,6 @@ func parseCSV(csv dataFrame: DataFrame) -> [Goal] {
             dependencyIDs = [singleDep]
         }
 
-        // Handle optional status field
         let rawStatus = (row["status"] as? String ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
         let initialStatus: GoalStatus = (rawStatus.lowercased() == "done") ? .completed : .locked
 
@@ -80,6 +77,28 @@ func parseCSV(csv dataFrame: DataFrame) -> [Goal] {
             }
         }
         finalGoals.append(goal)
+    }
+
+    // ---- Dependency Graph Printing ----
+    let levels = Dictionary(grouping: finalGoals, by: \.level)
+    let maxLevel = levels.keys.max() ?? 0
+    let sortedLevels = (0...maxLevel).compactMap { levels[$0]?.sorted(by: { $0.id < $1.id }) }
+
+    let dependencyMap = Dictionary(uniqueKeysWithValues: finalGoals.map { ($0.id, $0.dependency) })
+
+    print("🎯 Goal Dependency Layout:")
+    for (i, levelGoals) in sortedLevels.enumerated() {
+        let row = levelGoals.map { "[\($0.id)]" }.joined(separator: "   ")
+        print(row)
+
+        if i < sortedLevels.count - 1 {
+            let nextLevelGoals = sortedLevels[i + 1]
+            let arrows = levelGoals.map { goal in
+                let hasDependent = nextLevelGoals.contains { $0.dependency.contains(goal.id) }
+                return hasDependent ? "  |  " : "     "
+            }.joined()
+            print(arrows)
+        }
     }
 
     return finalGoals
