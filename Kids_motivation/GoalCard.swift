@@ -62,25 +62,14 @@ struct GoalCard: View {
         }
     }
 
-    func categoryIcon(for category: String) -> Image  {
-        switch category {
-        case "Gym":
-            return Image("gym")
-        case "Chess":
-            return Image("chess")
-        case "Book":
-            return Image("book")
-        case "Swim":
-            return Image("swim")
-        case "Clean":
-            return Image("clean")
-        case "Russian Language":
-            return Image("russian_flag")
-        case "Computer":
-            return Image("computer")
-        case "Adventure":
-            return Image("adventure")
-        default:
+    func categoryIcon(for category: String) -> Image {
+        let normalized = category
+            .lowercased()
+            .replacingOccurrences(of: " ", with: "_")
+
+        if UIImage(named: normalized) != nil {
+            return Image(normalized)
+        } else {
             return Image(systemName: "questionmark.circle")
         }
     }
